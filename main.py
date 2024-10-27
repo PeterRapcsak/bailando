@@ -1,17 +1,16 @@
 from tkinter import Tk, Canvas, PhotoImage, NW
 import os
-import time
 
 # Set up the main application window
 root = Tk()
 root.attributes('-transparentcolor', '#f0f0f0')
 
 # Canvas for displaying images
-canvas = Canvas(root, width=450, height=600)
+canvas = Canvas(root, width=450, height=300)
 canvas.pack()
 
 # Folder containing the images in order
-image_folder = "./outp"
+image_folder = "./img"
 image_files = sorted(
     [f for f in os.listdir(image_folder) if f.lower().endswith(('.png', '.jpg', '.gif'))]
 )
@@ -28,7 +27,7 @@ def update_image():
     global image_index
     image_index = (image_index + 1) % len(images)  # Cycle through images
     canvas.itemconfig(image_on_canvas, image=images[image_index])
-    root.after(70, update_image)  # Schedule the next image update
+    root.after(30, update_image)  # Schedule the next image update
 
 # Start the animation
 update_image()
