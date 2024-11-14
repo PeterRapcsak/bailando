@@ -21,26 +21,29 @@ DEFAULT_SETTINGS = {
 
 # Function to load settings from the JSON file
 def load_data():
-    # Check if the settings file exists and read the data
     if os.path.exists(SETTINGS_FILE):
-        with open(SETTINGS_FILE, "r") as file:
-            data = json.load(file)
-            # Safely extract x, y, hotkey, and opacity with fallbacks to defaults
-            x = data.get('position', {}).get('x', DEFAULT_SETTINGS['position']['x'])
-            y = data.get('position', {}).get('y', DEFAULT_SETTINGS['position']['y'])
-            hotkey = data.get('hotkey', DEFAULT_SETTINGS['hotkey'])
-            transparency = data.get('opacity', DEFAULT_SETTINGS['opacity'])
+        try:
+            with open(SETTINGS_FILE, "r") as file:
+                data = json.load(file)
+                x = data.get('position', {}).get('x', DEFAULT_SETTINGS['position']['x'])
+                y = data.get('position', {}).get('y', DEFAULT_SETTINGS['position']['y'])
+                hotkey = data.get('hotkey', DEFAULT_SETTINGS['hotkey'])
+                transparency = data.get('opacity', DEFAULT_SETTINGS['opacity'])
+                print("Loaded settings from JSON:")
+                print(f"Position: ({x}, {y}), Hotkey: {hotkey}, Opacity: {transparency}")
+                return QPoint(x, y), hotkey, transparency
+        except json.JSONDecodeError:
+            print("Error loading JSON. Resetting to default settings.")
+            save_data(position=QPoint(DEFAULT_SETTINGS['position']['x'], DEFAULT_SETTINGS['position']['y']),
+                      hotkey=DEFAULT_SETTINGS['hotkey'],
+                      transparency=DEFAULT_SETTINGS['opacity'])
+            return QPoint(DEFAULT_SETTINGS['position']['x'], DEFAULT_SETTINGS['position']['y']), \
+                   DEFAULT_SETTINGS['hotkey'], DEFAULT_SETTINGS['opacity']
+    else:
+        print("No settings file found, loading default settings.")
+        return QPoint(DEFAULT_SETTINGS['position']['x'], DEFAULT_SETTINGS['position']['y']), \
+               DEFAULT_SETTINGS['hotkey'], DEFAULT_SETTINGS['opacity']
 
-            # Debug print statements
-            print("Loaded settings from JSON:")
-            print(f"Position: ({x}, {y}), Hotkey: {hotkey}, Opacity: {transparency}")
-
-            # Return the QPoint for position, hotkey, and transparency
-            return QPoint(x, y), hotkey, transparency
-
-    # Fallback to default settings if settings.json does not exist
-    print("No settings file found, loading default settings.")
-    return QPoint(DEFAULT_SETTINGS['position']['x'], DEFAULT_SETTINGS['position']['y']), DEFAULT_SETTINGS['hotkey'], DEFAULT_SETTINGS['opacity']
 
 # Function to save settings to the JSON file
 def save_data(position=None, hotkey=None, transparency=None):
